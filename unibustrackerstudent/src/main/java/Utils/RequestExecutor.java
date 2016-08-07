@@ -21,7 +21,7 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class RequestExecutor extends AsyncTask<Object, Object, Object> {
+public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 	public AsyncResponse delegate = null;
 	public Context con;
 
@@ -35,11 +35,11 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 	}
 
 	@Override
-	protected void onPostExecute(Object result) {
+	protected void onPostExecute(Object[] result) {
 		delegate.onProcessCompelete(result);
 	};
 	@Override
-	protected Object doInBackground(Object... params) {
+	protected Object[] doInBackground(Object... params) {
 		//write logic here
 
 
@@ -47,22 +47,46 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 			switch (params[0].toString()) {
 				case "1": {
 					try {
-						return getBusList();
-
+						Object[] array = new Object[3];
+						array[0]=1;
+						array[1]=getBusList();
+						return array;
 
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					break;
 				}
+ 				case "2": {
 
-
-				case "2": {
-					return getCurrentLatLng((String)params[1]);
+					Object[] array = new Object[3];
+					array[0]=2;
+					array[1]= getCurrentLatLng((String) params[1]);
+					return array;
 
 
 
 				}
+				case "3": {
+
+					Object[] array = new Object[3];
+					array[0]=3;
+					array[1]= getDistanceOnRoad((LatLng)params[1],(LatLng)params[2]);
+
+					return array;
+
+				}
+
+				case "4": {
+
+					Object[] array = new Object[3];
+					array[0]=4;
+					array[1]=getDistanceFromNearestStop((ArrayList<LatLng>) params[1] , (LatLng) params[2]);
+
+					return array;
+
+				}
+
 
 
 				default: {
@@ -185,9 +209,127 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 
 
 
+	public Object getDistanceOnRoad(LatLng A, LatLng B) {
+
+
+		Double latitudeA = A.latitude;
+		Double longitudeA = A.longitude;
+		Double latitudeB = B.latitude;
+		Double longitudeB = B.longitude;
+
+		String Distance = null;
+		String Time = null;
+		String result= null;
+
+		HttpClient httpclient = Utils.getClient();
+		HttpGet httpget = new HttpGet("http://maps.googleapis.com/maps/api/distancematrix/json?origins=" + latitudeA + "," + longitudeA + "&destinations=" + latitudeB + "," + longitudeB + "&mode=driving&language=en-EN&sensor=false");
+		String jsonString = "Nothing returned";
+		try {
+
+			HttpResponse response = httpclient.execute(httpget);
+			jsonString = EntityUtils.toString(response.getEntity());
+			JSONObject jsonObject = new JSONObject(jsonString);
+
+			JSONArray jsonArray = jsonObject.getJSONArray("rows");
+
+			JSONArray jsonArray2 = jsonArray.getJSONObject(0).getJSONArray("elements");
+
+			JSONObject jsonObject2 =jsonArray2.getJSONObject(0).getJSONObject("distance");
+			JSONObject jsonObject3 =jsonArray2.getJSONObject(0).getJSONObject("duration");
+
+			Distance=jsonObject2.getString("text");
+			Time=jsonObject3.getString("text");
+
+			result=Distance+ " ..... " +Time;
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
 
 
 
+
+
+	public Object getDistanceFromNearestStop(ArrayList<LatLng> A , LatLng B) {
+
+
+ArrayList<Double>  Distances = new ArrayList<>() ;
+
+
+		for(int i =0;i<A.size();i++)
+		{
+
+
+			Double latitudeA = A.get(i).latitude;
+			Double longitudeA = A.get(i).longitude;
+			Double latitudeB = B.latitude;
+			Double longitudeB = B.longitude;
+
+			String Distance = null;
+			String Time = null;
+			String result= null;
+
+			HttpClient httpclient = Utils.getClient();
+			HttpGet httpget = new HttpGet("http://maps.googleapis.com/maps/api/distancematrix/json?origins=" + latitudeA + "," + longitudeA + "&destinations=" + latitudeB + "," + longitudeB + "&mode=driving&language=en-EN&sensor=false");
+			String jsonString = "Nothing returned";
+			try {
+
+				HttpResponse response = httpclient.execute(httpget);
+				jsonString = EntityUtils.toString(response.getEntity());
+				JSONObject jsonObject = new JSONObject(jsonString);
+
+				JSONArray jsonArray = jsonObject.getJSONArray("rows");
+
+				JSONArray jsonArray2 = jsonArray.getJSONObject(0).getJSONArray("elements");
+
+				JSONObject jsonObject2 =jsonArray2.getJSONObject(0).getJSONObject("distance");
+				JSONObject jsonObject3 =jsonArray2.getJSONObject(0).getJSONObject("duration");
+
+				Distance=jsonObject2.getString("text");
+				Time=jsonObject3.getString("text");
+
+				result=Distance+ " ..... " +Time;
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			double Result = Double.parseDouble(result);
+
+			Distances.add(Result);
+
+		}
+
+
+
+		double small = Distances.get(0);
+		int indexId = 0;
+		for (int i = 0; i < Distances.size(); i++) {
+			if (Distances.get(i)< small) {
+				small = Distances.get(i);
+				indexId = i;
+			}
+
+		}
+
+
+		Object[] data = new Object[2];
+		data[0]=small;
+		data[1]=indexId;
+
+          return data;
+
+
+	}
 
 
 

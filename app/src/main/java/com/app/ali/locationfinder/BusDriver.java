@@ -45,13 +45,6 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
 
 
 
-
-
-
-
-
-
-
         progress = new ProgressDialog(this);
         progress.setTitle("Please Wait !!!");
         progress.setMessage(" Loading ...");

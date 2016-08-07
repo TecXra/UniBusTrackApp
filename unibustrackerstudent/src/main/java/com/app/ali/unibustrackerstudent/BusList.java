@@ -59,44 +59,6 @@ public class BusList extends AppCompatActivity implements AsyncResponse {
 
     }
 
-    @Override
-    public void onProcessCompelete(Object result) {
-
-
-        progress.dismiss();
-
-
-
-        list = (ArrayList<UBus>)result;
-
-        adapter = new CustomUniBusAdapter(BusList.this, android.R.layout.simple_spinner_item,list);
-        btn = (Button)findViewById(R.id.StartStopBtn) ;
-        mySpinner = (Spinner) findViewById(R.id.spinner);
-        mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
-        // You can create an anonymous listener to handle the event when is selected an spinner item
-        mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
-                // Here you get the current item (a User object) that is selected by its position
-                UBus obj = adapter.getItem(position);
-                // Here you can do the action you want to...
-                //Toast.makeText(BusDriver.this, "ID: " + obj.getId() + "\nName: " + obj.getName(),
-                //      Toast.LENGTH_SHORT).show();
-
-                Bid = obj.getId();
-                Stops = obj.StopList;
-                Toast.makeText(BusList.this, "ID: " + Bid,
-                        Toast.LENGTH_SHORT).show();
-
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {  }
-        });
-
-
-    }
 
 
 
@@ -118,7 +80,42 @@ public class BusList extends AppCompatActivity implements AsyncResponse {
  }
 
 
+    @Override
+    public void onProcessCompelete(Object... result) {
+        progress.dismiss();
 
+if((int)result[0]==1) {
 
+    list = (ArrayList<UBus>) result[1];
 
+    adapter = new CustomUniBusAdapter(BusList.this, android.R.layout.simple_spinner_item, list);
+    btn = (Button) findViewById(R.id.StartStopBtn);
+    mySpinner = (Spinner) findViewById(R.id.spinner);
+    mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
+    // You can create an anonymous listener to handle the event when is selected an spinner item
+    mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view,
+                                   int position, long id) {
+            // Here you get the current item (a User object) that is selected by its position
+            UBus obj = adapter.getItem(position);
+            // Here you can do the action you want to...
+            //Toast.makeText(BusDriver.this, "ID: " + obj.getId() + "\nName: " + obj.getName(),
+            //      Toast.LENGTH_SHORT).show();
+
+            Bid = obj.getId();
+            Stops = obj.StopList;
+            Toast.makeText(BusList.this, "ID: " + Bid,
+                    Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapter) {
+        }
+    });
+
+}
+    }
 }

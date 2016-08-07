@@ -26,8 +26,8 @@ import Utils.RgPreference;
  */
 public class LocationService extends Service implements AsyncResponse {
 
-    LocationManager mlocmag = null;
-    LocationListener mlocList = null;
+    LocationManager mlocmag;
+    LocationListener mlocList;
     Location loc;
     String Bid;
     String lat;
@@ -43,6 +43,9 @@ public class LocationService extends Service implements AsyncResponse {
         super.onStart(intent, startId);
         Bundle extras = intent.getExtras();
         Bid = extras.getString("BID");
+
+
+        Toast.makeText(this, "Service Start...." + Bid, Toast.LENGTH_SHORT).show();
 
         UpdateWithNewLocation(loc); // This method is used to get updated location.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -61,7 +64,7 @@ public class LocationService extends Service implements AsyncResponse {
         // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Bid = sharedPreferences.getString(RgPreference.Bus_Id,null);
 
-        Toast.makeText(this, "Service Start...." + Bid, Toast.LENGTH_SHORT).show();
+
 
 
     }
@@ -70,8 +73,6 @@ public class LocationService extends Service implements AsyncResponse {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
-
-
         mlocmag = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mlocList = new MyLocationList();
 
@@ -86,7 +87,7 @@ public class LocationService extends Service implements AsyncResponse {
             return;
         }
         loc = mlocmag.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
+      //  UpdateWithNewLocation(loc);
 
 
 
@@ -162,8 +163,6 @@ public class LocationService extends Service implements AsyncResponse {
         {
             lat = ""+loc.getLatitude(); // Updated lat
             lng = ""+loc.getLongitude(); // Updated long
-
-
 
 
             RequestExecutor re = new RequestExecutor(this);

@@ -3,5 +3,5 @@ package Utils;
 
 
 public interface AsyncResponse {
-	void onProcessCompelete(Object result);
+	void onProcessCompelete(Object ... result);
 }
