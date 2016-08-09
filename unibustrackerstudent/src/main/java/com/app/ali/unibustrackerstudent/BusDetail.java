@@ -91,6 +91,13 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
     private GoogleApiClient client;
     LatLng Blatlng;
     LatLng NearestStop;
+    Boolean flagTest=true;
+
+
+
+
+
+
 
 
 
@@ -101,6 +108,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
         setContentView(R.layout.activity_bus_detail);
         Id = getIntent().getStringExtra("BusId");
         cordinatelist = (ArrayList<UStop>) getIntent().getSerializableExtra("StopList");
+
         //   Toast.makeText(getBaseContext(), "select : " + Id, Toast.LENGTH_SHORT).show();
         markerPoints = new ArrayList<LatLng>();
         // Getting reference to SupportMapFragment of the activity_main
@@ -136,6 +144,11 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
         }
 
 
+
+
+
+
+
         if (markerPoints.size() >= 2) {
             int i = cordinatelist.size() - 1;
             LatLng origin = markerPoints.get(0);
@@ -163,18 +176,18 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
             @Override
             public void onMyLocationChange(Location location) {
                 myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                map.addMarker(new MarkerOptions().position(myLocation).title("google...").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                map.addMarker(new MarkerOptions().position(myLocation).title("My Location...").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
             }
         };
 
 
-
-
-
-
-
     }
 
+    @Override
+    public void onDestroy() {
+           flagTest=false;
+            super.onDestroy();
+    }
 
     public void setmarker(LatLng point, String Stopname) {
         if (markerPoints.size() >= 10) {
@@ -402,10 +415,13 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
 
 
     private void BusLocation() {
-        RequestExecutor r1 = new RequestExecutor(BusDetail.this);
-        r1.delegate = BusDetail.this;
-        r1.execute("2",Id);
 
+        if(flagTest) {
+
+            RequestExecutor r1 = new RequestExecutor(BusDetail.this);
+            r1.delegate = BusDetail.this;
+            r1.execute("2", Id);
+        }
 
 
 
@@ -415,35 +431,61 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
     @Override
     public void onProcessCompelete(Object ...result) {
 
-        if((int)result[0]==2) {
 
-
+        if ((int) result[0] == 2) {
             BusLocation = (LatLng) result[1];
             map.addMarker(new MarkerOptions().position(BusLocation).title("Bus Location..").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(BusLocation, 11));
+          //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(BusLocation, 11));
             Blatlng = new LatLng(BusLocation.latitude, BusLocation.longitude);
 
+
+                RequestExecutor r3 = new RequestExecutor(BusDetail.this);
+                r3.delegate = BusDetail.this;
+                r3.execute("4", markerPoints, myLocation);
+
+
         }
 
 
-
-
-        if((int)result[0]==3) {
-
-
+        if ((int) result[0] == 4) {
             String Distance = (String) result[1];
-            TextView Mdist = (TextView) findViewById(R.id.textView5);
+            TextView Bdist = (TextView) findViewById(R.id.textView5);
+            Bdist.setText(Distance);
+
+            NearestStop= new LatLng(markerPoints.get((int)result[2]).latitude,markerPoints.get((int)result[2]).longitude);
+
+            RequestExecutor r2 = new RequestExecutor(BusDetail.this);
+            r2.delegate = BusDetail.this;
+            r2.execute("3", Blatlng, NearestStop);
+
+
+        }
+
+
+        if ((int) result[0] == 3) {
+            String Distance = (String) result[1];
+            TextView Mdist = (TextView) findViewById(R.id.textView3);
             Mdist.setText(Distance);
 
+
+            Location BusLocation=new Location("BusLocation");
+            BusLocation.setLatitude(Blatlng.latitude);
+            BusLocation.setLongitude(Blatlng.longitude);
+
+            Location StopLocation=new Location("newlocation");
+            StopLocation.setLatitude(NearestStop.latitude);
+            StopLocation.setLongitude(NearestStop.longitude);
+
+
+                if (distance(Blatlng.latitude, Blatlng.longitude, NearestStop.latitude, NearestStop.longitude) < 0.1) { // if distance < 0.1 miles we take locations as equal
+                   // Toast.makeText(getBaseContext(), "You Lost the BUS ....", Toast.LENGTH_SHORT).show();
+
+                    TextView mdist = (TextView) findViewById(R.id.textView3);
+                    mdist.setText("Oops ... You Missed the Bus  ");
+
+                }
+
         }
-
-
-
-
-        RequestExecutor r2 = new RequestExecutor(BusDetail.this);
-        r2.delegate = BusDetail.this;
-        r2.execute("3",Blatlng,myLocation);
-
 
 
 
@@ -452,6 +494,25 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
 
 
 
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist; // output distance, in MILES
+    }
 
 
 }

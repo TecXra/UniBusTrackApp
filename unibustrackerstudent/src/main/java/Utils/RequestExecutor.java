@@ -2,6 +2,7 @@ package Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -50,6 +51,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 						Object[] array = new Object[3];
 						array[0]=1;
 						array[1]=getBusList();
+
 						return array;
 
 					} catch (IOException e) {
@@ -62,6 +64,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 					Object[] array = new Object[3];
 					array[0]=2;
 					array[1]= getCurrentLatLng((String) params[1]);
+
 					return array;
 
 
@@ -79,9 +82,46 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 				case "4": {
 
-					Object[] array = new Object[3];
+					Object[] array = new Object[10];
 					array[0]=4;
-					array[1]=getDistanceFromNearestStop((ArrayList<LatLng>) params[1] , (LatLng) params[2]);
+
+					ArrayList<Double> Distances = new ArrayList<Double>();
+					ArrayList<String> stringreturn = new ArrayList<>();
+					ArrayList<LatLng> route = (ArrayList<LatLng>) params[1];
+
+					boolean flag=true;
+					int j=0;
+					while (flag)
+					{
+						if (j<route.size())
+						{
+							LatLng point = new LatLng(route.get(j).latitude, route.get(j).longitude);
+
+							stringreturn.add((String)getDistanceOnRoad(point, (LatLng) params[2]));
+							Scanner st = new Scanner(stringreturn.get(j));
+							while (!st.hasNextDouble())
+							{
+								st.next();
+							}
+							Distances.add(st.nextDouble());
+
+							j++;
+
+						}else{flag=false;}
+
+					}
+
+					double small = Distances.get(0);
+					int indexId = 0;
+					 for (int i = 0; i < Distances.size(); i++) {
+						if (Distances.get(i)< small) {
+							small = Distances.get(i);
+							indexId = i;
+						}
+
+					}
+					array[1]= stringreturn.get(indexId );
+					array[2]= indexId;
 
 					return array;
 
@@ -116,7 +156,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 
 
-		HttpGet httpget = new HttpGet("https://univbustrack.azurewebsites.net/api/UnivBus");
+		HttpGet httpget = new HttpGet(RgPreference.host + RgPreference.busListUrl);
 		JSONArray jArray;
 		String jsonString = "";
 		try {
@@ -131,13 +171,20 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 			for (int i = 0; i < jsonArray.length(); i++)
 			{
-				Id = ""+ jsonArray.getJSONObject(i).getInt("Id");
-				Name = jsonArray.getJSONObject(i).getString("Name");
-				CurrentLat =  jsonArray.getJSONObject(i).getString("CurrentLat");
-				CurrentLong = jsonArray.getJSONObject(i).getString("CurrentLong");
+
+				JSONObject jsonObject = jsonArray.getJSONObject(i).getJSONObject("UnivBus") ;
+
+
+				Id = ""+ jsonObject.getInt("Id");
+				Name = jsonObject.getString("Name");
+				CurrentLat =  jsonObject.getString("CurrentLat");
+				CurrentLong = jsonObject.getString("CurrentLong");
 
 				ArrayList<UStop> stoplist = new ArrayList<UStop>();
-				JSONArray results= jsonArray.getJSONObject(i).getJSONArray("BusStops");
+
+				JSONArray results = jsonArray.getJSONObject(i).getJSONArray("BusStop") ;
+
+
 							for(int j=0; j<results.length();j++)
 								{
 									stoplist.add(new UStop(
@@ -168,7 +215,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 		LatLng coordinates=null;
 		HttpClient httpclient = Utils.getClient();
 
-		HttpGet httpget = new HttpGet("https://univbustrack.azurewebsites.net/api/UnivBus/{id}".replace("{id}", Id));
+		HttpGet httpget = new HttpGet(RgPreference.host+RgPreference.busLatLng.replace("{id}", Id));
 
           UBus bus = new UBus();
 
@@ -222,7 +269,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 		String result= null;
 
 		HttpClient httpclient = Utils.getClient();
-		HttpGet httpget = new HttpGet("http://maps.googleapis.com/maps/api/distancematrix/json?origins=" + latitudeA + "," + longitudeA + "&destinations=" + latitudeB + "," + longitudeB + "&mode=driving&language=en-EN&sensor=false");
+		HttpGet httpget = new HttpGet(RgPreference.GoogleApiUrl2.replace("{OLat}",""+latitudeA).replace("{OLng}",""+longitudeA).replace("{DLat}",""+latitudeB).replace("{DLng}",""+longitudeB));
 		String jsonString = "Nothing returned";
 		try {
 
@@ -252,95 +299,6 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 		return result;
 	}
 
-
-
-
-
-	public Object getDistanceFromNearestStop(ArrayList<LatLng> A , LatLng B) {
-
-
-ArrayList<Double>  Distances = new ArrayList<>() ;
-
-
-		for(int i =0;i<A.size();i++)
-		{
-
-
-			Double latitudeA = A.get(i).latitude;
-			Double longitudeA = A.get(i).longitude;
-			Double latitudeB = B.latitude;
-			Double longitudeB = B.longitude;
-
-			String Distance = null;
-			String Time = null;
-			String result= null;
-
-			HttpClient httpclient = Utils.getClient();
-			HttpGet httpget = new HttpGet("http://maps.googleapis.com/maps/api/distancematrix/json?origins=" + latitudeA + "," + longitudeA + "&destinations=" + latitudeB + "," + longitudeB + "&mode=driving&language=en-EN&sensor=false");
-			String jsonString = "Nothing returned";
-			try {
-
-				HttpResponse response = httpclient.execute(httpget);
-				jsonString = EntityUtils.toString(response.getEntity());
-				JSONObject jsonObject = new JSONObject(jsonString);
-
-				JSONArray jsonArray = jsonObject.getJSONArray("rows");
-
-				JSONArray jsonArray2 = jsonArray.getJSONObject(0).getJSONArray("elements");
-
-				JSONObject jsonObject2 =jsonArray2.getJSONObject(0).getJSONObject("distance");
-				JSONObject jsonObject3 =jsonArray2.getJSONObject(0).getJSONObject("duration");
-
-				Distance=jsonObject2.getString("text");
-				Time=jsonObject3.getString("text");
-
-				result=Distance+ " ..... " +Time;
-
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			double Result = Double.parseDouble(result);
-
-			Distances.add(Result);
-
-		}
-
-
-
-		double small = Distances.get(0);
-		int indexId = 0;
-		for (int i = 0; i < Distances.size(); i++) {
-			if (Distances.get(i)< small) {
-				small = Distances.get(i);
-				indexId = i;
-			}
-
-		}
-
-
-		Object[] data = new Object[2];
-		data[0]=small;
-		data[1]=indexId;
-
-          return data;
-
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 }
