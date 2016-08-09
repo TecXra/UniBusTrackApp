@@ -112,13 +112,12 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 
 	public Object getBusList() throws IOException
 	{
-
 		HttpClient httpclient = Utils.getClient();
 
-		HttpGet httpget = new HttpGet("https://univbustrack.azurewebsites.net/api/UnivBus");
 
 
-
+		HttpGet httpget = new HttpGet(RgPreference.host + RgPreference.busListUrl);
+		JSONArray jArray;
 		String jsonString = "";
 		try {
 
@@ -127,16 +126,30 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 
 			JSONArray jsonArray= new JSONArray(jsonString);
 
+			String Id,Name,CurrentLat,CurrentLong;
+
+
 			for (int i = 0; i < jsonArray.length(); i++)
 			{
-				busList.add(new UniBus(jsonArray.getJSONObject(i).getString("Id"), jsonArray.getJSONObject(i).getString("Name")));
 
+				JSONObject jsonObject = jsonArray.getJSONObject(i).getJSONObject("UnivBus") ;
+
+
+				Id = ""+ jsonObject.getInt("Id");
+				Name = jsonObject.getString("Name");
+				CurrentLat =  jsonObject.getString("CurrentLat");
+				CurrentLong = jsonObject.getString("CurrentLong");
+
+
+				busList.add(new UniBus(Id,Name,CurrentLat,CurrentLong));
 			}
-	//		return busList;
 
-		} catch (JSONException e) {
-			e.printStackTrace();
+
+
+		} catch (JSONException e1) {
+			e1.printStackTrace();
 		}
+		//		return busList;
 
 
 		return busList;
@@ -151,7 +164,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object> {
 
 		try{
 			HttpClient client = Utils.getClient();
-			HttpPut put= new HttpPut("https://univbustrack.azurewebsites.net/api/UnivBus/{id}".replace("{id}", Id));
+			HttpPut put= new HttpPut(RgPreference.UpdateLatLngUrl.replace("{id}", Id));
 
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 			pairs.add(new BasicNameValuePair("Id", Id));

@@ -30,9 +30,10 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
     private Spinner mySpinner;
     ArrayList<UniBus> list;
 
-    boolean b=true;
+    boolean flag;
     private CustomUniBusAdapter adapter;
     Button btn ;
+    String service;
     String ID;
     private ProgressDialog progress;
     SharedPreferences sharedPreferences;
@@ -41,36 +42,48 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_driver);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BusDriver.this);
 
-
-
-
-        progress = new ProgressDialog(this);
-        progress.setTitle("Please Wait !!!");
-        progress.setMessage(" Loading ...");
-        progress.setCancelable(false);
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.show();
-
-
+      //  progress = new ProgressDialog(this);
+     ///   progress.setTitle("Please Wait !!!");
+     //   progress.setMessage(" Loading ...");
+     //   progress.setCancelable(false);
+     //   progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+     //   progress.show();
+//
         RequestExecutor re = new RequestExecutor(this);
         re.delegate = this;
         re.execute("1");
 
 
-
-
-
+        Toast.makeText(BusDriver.this, "OnCreate",Toast.LENGTH_SHORT).show();
 
 
 
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public void onProcessCompelete(Object result) {
 
 
-        progress.dismiss();
+      //  progress.dismiss();
 
 
 
@@ -89,16 +102,14 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
                 // Here you get the current item (a User object) that is selected by its position
                 UniBus obj = adapter.getItem(position);
                 // Here you can do the action you want to...
-                //Toast.makeText(BusDriver.this, "ID: " + obj.getId() + "\nName: " + obj.getName(),
-                  //      Toast.LENGTH_SHORT).show();
 
 
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BusDriver.this);
                 sharedPreferences.edit().putString(RgPreference.Bus_Id,"" + obj.getId()).commit();
-                ID = sharedPreferences.getString(RgPreference.Bus_Id,null);
+                ID = obj.getId();
 
-                Toast.makeText(BusDriver.this, "ID: " + ID,
-                        Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(BusDriver.this, "ID: " + ID,
+              //          Toast.LENGTH_SHORT).show();
 
 
 
@@ -109,42 +120,166 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
         });
 
 
+        check();
+
+
+    }
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    public void check() {
+
+
+
+       // Toast.makeText(BusDriver.this, "OnStart",Toast.LENGTH_SHORT).show();
+
+        flag =  sharedPreferences.getBoolean("flag",true);
+    //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+     //           Toast.LENGTH_SHORT).show();
+        if (!flag) {
+            mySpinner.setEnabled(false);
+
+            btn.setText("Stop Service");
+            btn.setBackgroundColor(Color.parseColor("green"));
+
+        } else {
+            mySpinner.setEnabled(true);
+            btn.setText("Start Service");
+            btn.setBackgroundColor(Color.parseColor("red"));
+
+
+        }
+
+
+
+
     }
 
 
 
 
-public void StartStopService(View view)
-{
- changeOption(mySpinner);
-}
+/*
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Toast.makeText(BusDriver.this, "OnResume",Toast.LENGTH_SHORT).show();
+
+    }
+
+
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Toast.makeText(BusDriver.this, "OnRestart",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Toast.makeText(BusDriver.this, "OnStop",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(BusDriver.this, "OnDestroy",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
+*/
+
+
+
+
+    public void StartStopService(View view)
+    {
+        changeOption(mySpinner);
+    }
 
 
     private void changeOption(Spinner spinner)
     {
 
 
-        if (b) {
+        flag =  sharedPreferences.getBoolean("flag",true);
+
+        if (flag) {
             spinner.setEnabled(false);
             Intent i = new Intent(BusDriver.this,LocationService.class);
             i.putExtra("BID",ID );
             startService(i);
+            sharedPreferences.edit().putBoolean("flag",false).commit();
+            sharedPreferences.edit().putString("ServiceState", "Start").apply();
 
-//            sharedPreferences.edit().putString("ServiceState", "Start").apply();
+         //   Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+       //             Toast.LENGTH_SHORT).show();
 
             btn.setText("Stop Service");
             btn.setBackgroundColor(Color.parseColor("green"));
-            b=false;
+
         } else {
             spinner.setEnabled(true);
             stopService(new Intent(BusDriver.this,LocationService.class));
-//            sharedPreferences.edit().putString("ServiceState", "Stop").apply();
-
+            sharedPreferences.edit().putString("ServiceState", "Stop").apply();
+            sharedPreferences.edit().putBoolean("flag",true).commit();
             btn.setText("Start Service");
             btn.setBackgroundColor(Color.parseColor("red"));
-            b=true;
+        //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+       //             Toast.LENGTH_SHORT).show();
 
         }
+
+    }
+
+
+/*
+
+@Override
+public void onResume()
+{
+    super.onResume();
+
+    Toast.makeText(BusDriver.this, "OnResume   ..........",
+          Toast.LENGTH_SHORT).show();
+
+    flag =  sharedPreferences.getBoolean("flag",true);
+
+
+    if (flag) {
+        mySpinner.setEnabled(false);
+        Intent i = new Intent(BusDriver.this,LocationService.class);
+        i.putExtra("BID",ID );
+        startService(i);
+        sharedPreferences.edit().putBoolean("flag",false).commit();
+//            sharedPreferences.edit().putString("ServiceState", "Start").apply();
+
+        btn.setText("Stop Service");
+        btn.setBackgroundColor(Color.parseColor("green"));
+
+    } else {
+        mySpinner.setEnabled(true);
+        stopService(new Intent(BusDriver.this,LocationService.class));
+//            sharedPreferences.edit().putString("ServiceState", "Stop").apply();
+        sharedPreferences.edit().putBoolean("flag",true).commit();
+        btn.setText("Start Service");
+        btn.setBackgroundColor(Color.parseColor("red"));
+
 
     }
 
@@ -152,4 +287,7 @@ public void StartStopService(View view)
 
 
 
+}
+
+*/
 }
