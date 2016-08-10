@@ -17,10 +17,10 @@ public class RgPreference {
     public static final String busLatLng="/api/UnivBus/{id}";
 
 
-    public static final String GoogleApiUrl="http://maps.googleapis.com/maps/api/distancematrix/json?origins={originlatlng}&destinations={destlatlng}&mode=driving&language=en-EN&sensor=false";
+    public static final String GoogleApiUrlDrive="http://maps.googleapis.com/maps/api/distancematrix/json?origins={OLat},{OLng}&destinations={DLat},{DLng}&mode=driving&language=en-EN&sensor=false";
 
 
-    public static final String GoogleApiUrl2="http://maps.googleapis.com/maps/api/distancematrix/json?origins={OLat},{OLng}&destinations={DLat},{DLng}&mode=driving&language=en-EN&sensor=false";
+    public static final String GoogleApiUrlWalk="http://maps.googleapis.com/maps/api/distancematrix/json?origins={OLat},{OLng}&destinations={DLat},{DLng}&mode=walking&language=en-EN&sensor=false";
 
 
 }

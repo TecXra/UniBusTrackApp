@@ -71,12 +71,16 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 				}
 				case "3": {
+					if(true)
+					{
+						Object[] array = new Object[3];
+						array[0]=3;
+						array[1]= getDriveDistanceOnRoad((LatLng)params[1],(LatLng)params[2]);
 
-					Object[] array = new Object[3];
-					array[0]=3;
-					array[1]= getDistanceOnRoad((LatLng)params[1],(LatLng)params[2]);
+						return array;
 
-					return array;
+					}
+					break;
 
 				}
 
@@ -97,7 +101,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 						{
 							LatLng point = new LatLng(route.get(j).latitude, route.get(j).longitude);
 
-							stringreturn.add((String)getDistanceOnRoad(point, (LatLng) params[2]));
+							stringreturn.add((String)getWalkDistanceOnRoad(point, (LatLng) params[2]));
 							Scanner st = new Scanner(stringreturn.get(j));
 							while (!st.hasNextDouble())
 							{
@@ -256,7 +260,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 
 
-	public Object getDistanceOnRoad(LatLng A, LatLng B) {
+	public Object getDriveDistanceOnRoad(LatLng A, LatLng B) {
 
 
 		Double latitudeA = A.latitude;
@@ -269,7 +273,7 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 		String result= null;
 
 		HttpClient httpclient = Utils.getClient();
-		HttpGet httpget = new HttpGet(RgPreference.GoogleApiUrl2.replace("{OLat}",""+latitudeA).replace("{OLng}",""+longitudeA).replace("{DLat}",""+latitudeB).replace("{DLng}",""+longitudeB));
+		HttpGet httpget = new HttpGet(RgPreference.GoogleApiUrlDrive.replace("{OLat}",""+latitudeA).replace("{OLng}",""+longitudeA).replace("{DLat}",""+latitudeB).replace("{DLng}",""+longitudeB));
 		String jsonString = "Nothing returned";
 		try {
 
@@ -298,6 +302,58 @@ public class RequestExecutor extends AsyncTask<Object, Object, Object[]> {
 
 		return result;
 	}
+
+
+
+
+	public Object getWalkDistanceOnRoad(LatLng A, LatLng B) {
+
+
+		Double latitudeA = A.latitude;
+		Double longitudeA = A.longitude;
+		Double latitudeB = B.latitude;
+		Double longitudeB = B.longitude;
+
+		String Distance = null;
+		String Time = null;
+		String result= null;
+
+		HttpClient httpclient = Utils.getClient();
+		HttpGet httpget = new HttpGet(RgPreference.GoogleApiUrlWalk.replace("{OLat}",""+latitudeA).replace("{OLng}",""+longitudeA).replace("{DLat}",""+latitudeB).replace("{DLng}",""+longitudeB));
+		String jsonString = "Nothing returned";
+		try {
+
+			HttpResponse response = httpclient.execute(httpget);
+			jsonString = EntityUtils.toString(response.getEntity());
+			JSONObject jsonObject = new JSONObject(jsonString);
+
+			JSONArray jsonArray = jsonObject.getJSONArray("rows");
+
+			JSONArray jsonArray2 = jsonArray.getJSONObject(0).getJSONArray("elements");
+
+			JSONObject jsonObject2 =jsonArray2.getJSONObject(0).getJSONObject("distance");
+			JSONObject jsonObject3 =jsonArray2.getJSONObject(0).getJSONObject("duration");
+
+			Distance=jsonObject2.getString("text");
+			Time=jsonObject3.getString("text");
+
+			result=Distance+ " ..... " +Time;
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+
+
+
+
+
 
 
 

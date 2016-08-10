@@ -44,13 +44,13 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
         setContentView(R.layout.activity_bus_driver);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BusDriver.this);
 
-      //  progress = new ProgressDialog(this);
-     ///   progress.setTitle("Please Wait !!!");
-     //   progress.setMessage(" Loading ...");
-     //   progress.setCancelable(false);
-     //   progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-     //   progress.show();
-//
+        progress = new ProgressDialog(this);
+       progress.setTitle("Please Wait !!!");
+        progress.setMessage(" Loading ...");
+        progress.setCancelable(false);
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.show();
+
         RequestExecutor re = new RequestExecutor(this);
         re.delegate = this;
         re.execute("1");
@@ -83,7 +83,7 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
     public void onProcessCompelete(Object result) {
 
 
-      //  progress.dismiss();
+        progress.dismiss();
 
 
 
@@ -247,47 +247,4 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
 
     }
 
-
-/*
-
-@Override
-public void onResume()
-{
-    super.onResume();
-
-    Toast.makeText(BusDriver.this, "OnResume   ..........",
-          Toast.LENGTH_SHORT).show();
-
-    flag =  sharedPreferences.getBoolean("flag",true);
-
-
-    if (flag) {
-        mySpinner.setEnabled(false);
-        Intent i = new Intent(BusDriver.this,LocationService.class);
-        i.putExtra("BID",ID );
-        startService(i);
-        sharedPreferences.edit().putBoolean("flag",false).commit();
-//            sharedPreferences.edit().putString("ServiceState", "Start").apply();
-
-        btn.setText("Stop Service");
-        btn.setBackgroundColor(Color.parseColor("green"));
-
-    } else {
-        mySpinner.setEnabled(true);
-        stopService(new Intent(BusDriver.this,LocationService.class));
-//            sharedPreferences.edit().putString("ServiceState", "Stop").apply();
-        sharedPreferences.edit().putBoolean("flag",true).commit();
-        btn.setText("Start Service");
-        btn.setBackgroundColor(Color.parseColor("red"));
-
-
-    }
-
-
-
-
-
-}
-
-*/
 }

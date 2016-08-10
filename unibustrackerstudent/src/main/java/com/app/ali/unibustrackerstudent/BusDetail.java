@@ -92,7 +92,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
     LatLng Blatlng;
     LatLng NearestStop;
     Boolean flagTest=true;
-
+    Marker singleMarker;
 
 
 
@@ -175,8 +175,27 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
         return new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
+
                 myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                map.addMarker(new MarkerOptions().position(myLocation).title("My Location...").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                MarkerOptions marker = new MarkerOptions().position(myLocation).title("My Location...").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+
+
+                if(singleMarker != null) {
+                    singleMarker.remove();
+                    singleMarker = map.addMarker(marker);
+                }else{
+                    singleMarker = map.addMarker(marker);
+
+                }
+
+
+
+
+
+
+
+
+
             }
         };
 
