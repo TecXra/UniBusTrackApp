@@ -21,7 +21,7 @@ import Models.UniBus;
 public class CustomUniBusAdapter extends ArrayAdapter<UniBus> {
 
     private Context context;
-   private ArrayList<UniBus> Buslist;
+    private ArrayList<UniBus> Buslist;
 
     public CustomUniBusAdapter(Context context, int textViewResourceId, ArrayList<UniBus> list) {
         super(context, textViewResourceId, list);
@@ -53,8 +53,8 @@ public class CustomUniBusAdapter extends ArrayAdapter<UniBus> {
         // You can NOW reference each method you has created in your bean object (User class)
         label.setText(Buslist.get(position).getName());
         label.setGravity(Gravity.CENTER);
-        label.setTextSize(40);
-
+        label.setTextSize(20);
+        label.setTextColor(Color.parseColor("#DD741D"));
         // And finally return your dynamic (or custom) view for each spinner item
         return label;
     }
@@ -64,8 +64,8 @@ public class CustomUniBusAdapter extends ArrayAdapter<UniBus> {
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setTextColor(Color.BLACK);
-        label.setTextSize(30);
+        label.setTextColor(Color.parseColor("#DD741D"));
+        label.setTextSize(20);
         label.setGravity(Gravity.CENTER);
         label.setText(Buslist.get(position).getName());
 

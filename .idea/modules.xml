@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/UniBusTracker.iml" filepath="$PROJECT_DIR$/UniBusTracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UniBusTrackApp.iml" filepath="$PROJECT_DIR$/UniBusTrackApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/unibustrackerstudent/unibustrackerstudent.iml" filepath="$PROJECT_DIR$/unibustrackerstudent/unibustrackerstudent.iml" />
     </modules>

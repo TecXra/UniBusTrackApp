@@ -45,7 +45,7 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BusDriver.this);
 
         progress = new ProgressDialog(this);
-       progress.setTitle("Please Wait !!!");
+        progress.setTitle("Please Wait !!!");
         progress.setMessage(" Loading ...");
         progress.setCancelable(false);
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -108,8 +108,8 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
                 sharedPreferences.edit().putString(RgPreference.Bus_Id,"" + obj.getId()).commit();
                 ID = obj.getId();
 
-              //  Toast.makeText(BusDriver.this, "ID: " + ID,
-              //          Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(BusDriver.this, "ID: " + ID,
+                //          Toast.LENGTH_SHORT).show();
 
 
 
@@ -137,21 +137,21 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
 
 
 
-       // Toast.makeText(BusDriver.this, "OnStart",Toast.LENGTH_SHORT).show();
+        // Toast.makeText(BusDriver.this, "OnStart",Toast.LENGTH_SHORT).show();
 
         flag =  sharedPreferences.getBoolean("flag",true);
-    //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
-     //           Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+        //           Toast.LENGTH_SHORT).show();
         if (!flag) {
             mySpinner.setEnabled(false);
 
             btn.setText("Stop Service");
-            btn.setBackgroundColor(Color.parseColor("green"));
+            btn.setBackgroundColor(Color.parseColor("#000066"));
 
         } else {
             mySpinner.setEnabled(true);
             btn.setText("Start Service");
-            btn.setBackgroundColor(Color.parseColor("red"));
+            btn.setBackgroundColor(Color.parseColor("#DD741D"));
 
 
         }
@@ -227,11 +227,11 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
             sharedPreferences.edit().putBoolean("flag",false).commit();
             sharedPreferences.edit().putString("ServiceState", "Start").apply();
 
-         //   Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
-       //             Toast.LENGTH_SHORT).show();
+            //   Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+            //             Toast.LENGTH_SHORT).show();
 
             btn.setText("Stop Service");
-            btn.setBackgroundColor(Color.parseColor("green"));
+            btn.setBackgroundColor(Color.parseColor("#000066"));
 
         } else {
             spinner.setEnabled(true);
@@ -239,9 +239,9 @@ public class BusDriver extends AppCompatActivity implements AsyncResponse {
             sharedPreferences.edit().putString("ServiceState", "Stop").apply();
             sharedPreferences.edit().putBoolean("flag",true).commit();
             btn.setText("Start Service");
-            btn.setBackgroundColor(Color.parseColor("red"));
-        //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
-       //             Toast.LENGTH_SHORT).show();
+            btn.setBackgroundColor(Color.parseColor("#DD741D"));
+            //    Toast.makeText(BusDriver.this,""+sharedPreferences.getBoolean("flag",false),
+            //             Toast.LENGTH_SHORT).show();
 
         }
 
