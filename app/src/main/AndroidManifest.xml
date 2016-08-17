@@ -35,18 +35,21 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
-
-        <service android:name=".GPSLocationService" ></service>
-        <service android:name=".LocationService" ></service>
+        <service android:name=".LocationService" />
 
         <activity android:name=".BusDriver">
+
+        </activity>
+        <activity android:name=".Splashing"
+            android:label="Welcome"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
     </application>
 

@@ -93,7 +93,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
     LatLng NearestStop;
     Boolean flagTest=true;
     Marker singleMarker;
-
+Marker BusMarker;
 
 
 
@@ -183,6 +183,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
                 if(singleMarker != null) {
                     singleMarker.remove();
                     singleMarker = map.addMarker(marker);
+//                    singleMarker.showInfoWindow();
                 }else{
                     singleMarker = map.addMarker(marker);
 
@@ -453,9 +454,24 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
 
         if ((int) result[0] == 2) {
             BusLocation = (LatLng) result[1];
-            map.addMarker(new MarkerOptions().position(BusLocation).title("Bus Location..").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
-          //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(BusLocation, 11));
+
+            MarkerOptions marker = new MarkerOptions().position(BusLocation).title("Bus Location..").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+
+            if(BusMarker != null) {
+                BusMarker.remove();
+                BusMarker = map.addMarker(marker);
+                BusMarker.showInfoWindow();
+            }else{
+                BusMarker = map.addMarker(marker);
+
+            }
+
+
+
+
+            //  map.moveCamera(CameraUpdateFactory.newLatLngZoom(BusLocation, 11));
             Blatlng = new LatLng(BusLocation.latitude, BusLocation.longitude);
+
 
 
                 RequestExecutor r3 = new RequestExecutor(BusDetail.this);
@@ -468,7 +484,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
 
         if ((int) result[0] == 4) {
             String Distance = (String) result[1];
-            TextView Bdist = (TextView) findViewById(R.id.textView5);
+            TextView Bdist = (TextView) findViewById(R.id.textView3);
             Bdist.setText(Distance);
 
             NearestStop= new LatLng(markerPoints.get((int)result[2]).latitude,markerPoints.get((int)result[2]).longitude);
@@ -483,7 +499,7 @@ public class BusDetail extends FragmentActivity implements AsyncResponse {
 
         if ((int) result[0] == 3) {
             String Distance = (String) result[1];
-            TextView Mdist = (TextView) findViewById(R.id.textView3);
+            TextView Mdist = (TextView) findViewById(R.id.textView5);
             Mdist.setText(Distance);
 
 
